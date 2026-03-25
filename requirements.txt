@@ -1,0 +1,2 @@
+aiogram==3.26.0
+pillow
