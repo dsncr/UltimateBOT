@@ -1,6 +1,7 @@
 import sqlite3
 from aiogram import F
 from aiogram import Router
+from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.state import State, StatesGroup
@@ -74,6 +75,22 @@ async def save_photo(message: Message, state: FSMContext):
     await message.answer("✅ Фото сохранено (500x500)")
     await state.clear()
 
+
+@router.message(Command("whoami"))
+async def whoami(message: Message):
+    import sqlite3
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT login, role, telegram_id FROM users WHERE telegram_id=?",
+        (message.from_user.id,)
+    )
+
+    user = cursor.fetchone()
+    conn.close()
+
+    await message.answer(f"{user}")
 
 # =========================
 # 👤 ПРОФИЛЬ

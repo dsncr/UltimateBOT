@@ -101,15 +101,17 @@ def create_products_table(cursor):
     """)
 
 
-def hash_password(password: str):
-    import hashlib
-    return hashlib.sha256(password.lower().encode()).hexdigest()
-
-
 def bind_telegram(login: str, telegram_id: int):
-    conn = get_connection()
+    conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
 
+    # ❗ Удаляем старую привязку этого TG
+    cursor.execute(
+        "UPDATE users SET telegram_id=NULL WHERE telegram_id=?",
+        (telegram_id,)
+    )
+
+    # ✅ Привязываем к новому аккаунту
     cursor.execute(
         "UPDATE users SET telegram_id=? WHERE login=?",
         (telegram_id, login)
@@ -136,7 +138,7 @@ def get_role_by_telegram(telegram_id: int):
 
 def create_default_admin(cursor):
     login = "slippery-blue-cobra"
-    password = hash_password("derzhava")
+    password = "derzhava"
 
     cursor.execute("SELECT * FROM users WHERE login=?", (login,))
     exists = cursor.fetchone()
@@ -154,7 +156,7 @@ def check_user(login: str, password: str):
 
     cursor.execute(
         "SELECT role FROM users WHERE login=? AND password=?",
-        (login, hash_password(password))
+        (login, password)
     )
 
     result = cursor.fetchone()
@@ -173,7 +175,7 @@ def register_user(login: str, password: str, name: str, username_id:str, telegra
             "INSERT INTO users (login, password, role , full_name, telegram_id, username_id) VALUES (?, ?, ?, ?, ?, ?)",
             (
             login,
-            hash_password(password),
+            password,
             UserRole.MENTOR.value,
             name,
             telegram_id,

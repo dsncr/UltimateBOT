@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from db import get_users_count, get_orders_count
 
-from db import set_role, UserRole, get_role_by_telegram, hash_password
+from db import set_role, UserRole, get_role_by_telegram
 from keyboards import (
     mentor_keyboard,
     admin_menu,
@@ -89,7 +89,7 @@ async def create_name(message: Message, state: FSMContext):
         VALUES (?, ?, ?, ?)
         """, (
             data["login"],
-            hash_password(data["password"]),
+            data["password"],
             UserRole.MENTOR.value,
             message.text
         ))

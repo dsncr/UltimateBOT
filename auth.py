@@ -4,7 +4,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
-from db import get_user_by_login, get_users_count, get_orders_count
+from db import get_role_by_telegram, get_user_by_login, get_users_count, get_orders_count
 from db import check_user, bind_telegram
 from keyboards import admin_reply_keyboard, mentor_menu, start_keyboard, warehouse_menu
 
@@ -29,6 +29,15 @@ async def start(message: Message):
         reply_markup=start_keyboard()
     )
 
+@router.message(Command("start-test"))
+async def start(message: Message):
+    role = get_role_by_telegram(message.from_user.id)
+
+    if role:
+        await message.answer("✅ Вы уже авторизованы")
+        return
+
+    await message.answer("🔐 Войдите в систему")
 
 # =========================
 # 🔐 АВТОРИЗАЦИЯ

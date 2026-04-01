@@ -10,6 +10,18 @@ from PIL import Image
 import os
 from aiogram.types import FSInputFile
 
+async def safe_delete(message):
+    try:
+        await message.delete()
+    except:
+        pass
+
+async def safe_edit(callback: CallbackQuery, text, markup=None):
+    try:
+        await callback.message.edit_text(text, reply_markup=markup)
+    except:
+        await callback.message.answer(text, reply_markup=markup)
+
 def is_warehouse(user_id):
     return get_role_by_telegram(user_id) == "warehouse"
 
@@ -44,11 +56,16 @@ async def warehouse_stats(message: Message):
     if not is_warehouse(message.from_user.id):
         return await message.answer("Нет доступа")
 
+    await safe_delete(message)
+
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(*) FROM orders")
-    orders_count = cursor.fetchone()[0]
+    try:
+        cursor.execute("SELECT COUNT(*) FROM orders")
+        orders_count = cursor.fetchone()[0]
+    except:
+        orders_count = 0
 
     cursor.execute("""
         SELECT p.name, COUNT(o.id)
@@ -62,10 +79,13 @@ async def warehouse_stats(message: Message):
 
     conn.close()
 
-    text = f"📊 Статистика:\n\n🛒 Заказов: {orders_count}\n\n🔥 Топ товары:\n"
+    text = f"📊 Статистика:\n\n🛒 Заказов: {orders_count}\n\n🔥 Топ товары:{top_products}\n"
 
-    for name, count in top_products:
-        text += f"• {name} — {count}\n"
+    if top_products:
+        for name, count in top_products:
+            text += f"• {name} — {count}\n"
+    else:
+        text += "Пока нет данных"
 
     await message.answer(text)
 
@@ -81,6 +101,8 @@ async def give_points_start(message: Message):
     users = cursor.fetchall()
     conn.close()
 
+    await safe_delete(message)  # 🔥
+
     await message.answer(
         "👤 Выберите пользователя:",
         reply_markup=users_select_keyboard(users)
@@ -91,14 +113,17 @@ async def select_user(callback: CallbackQuery, state: FSMContext):
     login = callback.data.split(":")[1]
 
     await state.update_data(login=login)
-    await callback.message.answer("Введите количество баллов:")
-    await state.set_state(WarehouseState.waiting_points)
 
+    await safe_edit(callback, "Введите количество баллов:")  # 🔥
+
+    await state.set_state(WarehouseState.waiting_points)
     await callback.answer()
 
 @router.message(WarehouseState.waiting_points)
 async def add_points(message: Message, state: FSMContext):
     data = await state.get_data()
+
+    await safe_delete(message)  # 🔥
 
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
@@ -126,6 +151,8 @@ async def change_stock_start(message: Message):
     products = cursor.fetchall()
     conn.close()
 
+    await safe_delete(message)  # 🔥
+
     await message.answer(
         "📦 Выберите товар:",
         reply_markup=products_select_keyboard(products)
@@ -136,14 +163,17 @@ async def select_product(callback: CallbackQuery, state: FSMContext):
     product_id = callback.data.split(":")[1]
 
     await state.update_data(product_id=product_id)
-    await callback.message.answer("Введите новое количество:")
-    await state.set_state(WarehouseState.waiting_quantity)
 
+    await safe_edit(callback, "Введите новое количество:")  # 🔥
+
+    await state.set_state(WarehouseState.waiting_quantity)
     await callback.answer()
 
 @router.message(WarehouseState.waiting_quantity)
 async def update_stock(message: Message, state: FSMContext):
     data = await state.get_data()
+
+    await safe_delete(message)  # 🔥
 
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
