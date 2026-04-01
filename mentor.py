@@ -43,7 +43,20 @@ async def save_photo(message: Message, state: FSMContext):
 
     # 🖼 обработка изображения
     image = Image.open(downloaded)
-    image = image.resize((500, 500))  # 🔥 вот тут 500x500
+    # 📏 сначала уменьшаем с сохранением пропорций
+    image.thumbnail((500, 500))
+
+    # 📐 потом обрезаем по центру до 500x500
+    width, height = image.size
+
+    left = (width - 500) / 2
+    top = (height - 500) / 2
+    right = (width + 500) / 2
+    bottom = (height + 500) / 2
+
+    image = image.crop((left, top, right, bottom))
+
+    # 💾 сохраняем
     image.save(filename, "JPEG")
 
     # 💾 сохранить путь в БД

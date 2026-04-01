@@ -6,7 +6,6 @@ def start_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(text="🔐 Авторизация", callback_data="login"),
-            InlineKeyboardButton(text="📝 Регистрация", callback_data="register")
         ]
     ])
 

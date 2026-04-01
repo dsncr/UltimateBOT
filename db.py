@@ -46,6 +46,7 @@ def init_db():
     # ✅ передаём cursor, а не создаём новое соединение
     create_products_table(cursor)
     seed_products()
+    seed_users()
     create_default_admin(cursor)
 
     conn.commit()
@@ -250,17 +251,17 @@ def seed_products():
     cursor = conn.cursor()
 
     products = [
-        ("ВЕРЁВКА ДЛЯ ТЕЛЕФОНА", "Удобная зеленая веревка для телефона, с которой можно носить телефон через плечо", 10, 10, "photos/merch/brelok.jpg"),
-        ("РУЧКА «Я В ДЕЛЕ»", "Брендированная ручка *«Я в деле»*, надежная, долговечная ", 10, 10, "photos/merch/ruchka.jpg"),
-        ("МИНИ-ШОППЕР", "Компактная брендированная сумка, которую удобно носить с собой", 10, 10, "photos/merch/shopper.jpg"),
-        ("ПИН «Я В ДЕЛЕ»", "Данный пин, является одним из стареших атрибутов нашей программы, подходит для официальных и торжественных мероприятий", 15, 10, "photos/merch/stickerpack.jpg"),
-        ("БЛОКНОТ «Я В ДЕЛЕ»", "Фирменный блокнот, выдается победителям на турнирах в университетах", 15, 10, "photos/merch/bloknot.jpg"),
-        ("КАРТХОЛДЕР", "Красивый зеленый картхолдер, почти как у Тинькова", 20, 10, "photos/merch/cardholder.jpg"),
-        ("ОБЛОЖКА НА ПАСПОРТ", "Брендированная обложка на паспорт", 30, 10, "photos/merch/passport.jpg"),
+        ("ВЕРЁВКА ДЛЯ ТЕЛЕФОНА", "Удобная зеленая веревка для телефона, с которой можно носить телефон через плечо", 10, 60, "photos/merch/brelok.jpg"),
+        ("РУЧКА «Я В ДЕЛЕ»", "Брендированная ручка *«Я в деле»*, надежная, долговечная ", 10, 100, "photos/merch/ruchka.jpg"),
+        ("МИНИ-ШОППЕР", "Компактная брендированная сумка, которую удобно носить с собой", 10, 60, "photos/merch/shopper.jpg"),
+        ("ПИН «Я В ДЕЛЕ»", "Данный пин, является одним из стареших атрибутов нашей программы, подходит для официальных и торжественных мероприятий", 15, 40, "photos/merch/stickerpack.jpg"),
+        ("БЛОКНОТ «Я В ДЕЛЕ»", "Фирменный блокнот, выдается победителям на турнирах в университетах", 15, 30, "photos/merch/bloknot.jpg"),
+        ("КАРТХОЛДЕР", "Красивый зеленый картхолдер, почти как у Тинькова", 20, 20, "photos/merch/cardholder.jpg"),
+        ("ОБЛОЖКА НА ПАСПОРТ", "Брендированная обложка на паспорт", 30, 20, "photos/merch/passport.jpg"),
         ("ФУТБОЛКА", "Черная футболка *«Я в деле»*, выдавалась наставникам 7 сезона на июльке ", 50, 10, "photos/merch/t-shirt.jpg"),
-        ("РУБАШКА ЧЕРНАЯ", "Рубашка старшего наставника, выдавалась всем старшим наставникам 8 сезона", 70, 10, "photos/merch/blackjacket.jpg"),
-        ("РУБАШКА С. ТЕРЕХОВА", "Премиум", 250, 10, "photos/merch/greenjacket.jpg"),
-        ("БОМБЕР РУКОВОДИТЕЛЯ", "Эксклюзив, выдается за особые заслуги", 600, 10, "photos/merch/bomber.jpg"),
+        ("РУБАШКА ЧЕРНАЯ", "Рубашка старшего наставника, выдавалась всем старшим наставникам 8 сезона", 70, 9, "photos/merch/blackjacket.jpg"),
+        ("РУБАШКА НАСТАВНИКА 2023", "Старый вариант рубашки наставника, больше не производится", 250, 3, "photos/merch/greenjacket.jpg"),
+        ("БОМБЕР РУКОВОДИТЕЛЯ", "Эксклюзив, выдается за особые заслуги", 600, 1, "photos/merch/bomber.jpg"),
     ]
 
     for p in products:
@@ -270,6 +271,51 @@ def seed_products():
             INSERT INTO products (name, description, price, quantity, photo1)
             VALUES (?, ?, ?, ?, ?)
             """, p)
+
+    conn.commit()
+    conn.close()
+
+def seed_users():
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+
+    users = [
+        ("albin4ik", "spoyavd", "admin", "Аухадиева Альбина"),
+        ("evil-black-rattlesnake", "12345", "mentor", "Гаврилова Полина"),
+        ("silent-orange-bulldog", "12345", "mentor", "Мосин Валерий"),
+        ("big-green-wombat", "12345", "mentor", "Тоон Евгений"),
+        ("thin-brown-cheetah", "12345", "mentor", "Карасева Мария"),
+        ("bad-green-frog", "12345", "mentor", "Гриценко Вероника"),
+        ("angry-purple-monkey", "12345", "mentor", "Ткаченко Полина"),
+        ("itchy-purple-treefrog", "12345", "mentor", "Скубаков Георгий"),
+        ("giant-indigo-ladybug", "12345", "mentor", "Гребенюк Екатерина"),
+        ("breezy-silver-dragon", "12345", "mentor", "Синицкая Арина"),
+        ("giant-navy-octopus", "12345", "mentor", "Широкова Нина"),
+        ("serious-white-dodo", "12345", "mentor", "Ковтунова Ксения"),
+        ("tender-green-panda", "12345", "mentor", "Абелькенова Лиана"),
+        ("nasty-red-bulldog", "12345", "mentor", "Дащенко Мария"),
+        ("tall-indigo-ladybug", "12345", "mentor", "Медведев Дмитрий"),
+        ("odd-silver-deer", "12345", "mentor", "Беспятов Михаил"),
+        ("quiet-gold-squid", "12345", "mentor", "Редькин Сергей"),
+        ("gentle-silver-dog", "12345", "mentor", "Азек Дмитрий"),
+        ("dangerous-purple-eagle", "12345", "mentor", "Приходченко Олеся"),
+        ("old-silver-ladybug", "12345", "mentor", "Терехов Александр"),
+        ("spotty-indigo-mule", "12345", "mentor", "Крещаев Лев"),
+        ("kind-purple-monkey", "12345", "mentor", "Князева Александра"),
+        ("good-brown-rattlesnake", "12345", "mentor", "Уваренко Богдан"),
+        ("wet-lime-ape", "12345", "mentor", "Федоткина Карина"),
+        ("great-violet-rabbit", "12345", "mentor", "Славутский Ярослав"),
+        
+        ("pretty-black-quail", "12345", "warehouse", "Ципичев Александр"),
+    ]
+
+    for login, password, role, name in users:
+        cursor.execute("SELECT * FROM users WHERE login=?", (login,))
+        if not cursor.fetchone():
+            cursor.execute(
+                "INSERT INTO users (login, password, role, full_name) VALUES (?, ?, ?, ?)",
+                (login, password, role, name)
+            )
 
     conn.commit()
     conn.close()
