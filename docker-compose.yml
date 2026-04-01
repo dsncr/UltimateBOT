@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    container_name: yavdele_bot
+
+    restart: always
+
+    volumes:
+      - .:/app   # 🔥 сохраняет БД и фото
+
+    environment:
+      - BOT_TOKEN=8632022187:AAEW0sJjcPlytKtpclHehc2_r4ATBOVxoRY
+
+    command: python main.py

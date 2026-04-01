@@ -1,7 +1,8 @@
 import asyncio
 import logging
-
+import os
 from aiogram import Bot, Dispatcher
+from dotenv import load_dotenv
 
 from db import init_db
 from auth import router as auth_router
@@ -12,7 +13,9 @@ from warehouse import router as warehouse_router
 
 logging.basicConfig(level=logging.INFO)
 
-BOT_TOKEN = "8632022187:AAEW0sJjcPlytKtpclHehc2_r4ATBOVxoRY"
+load_dotenv()
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
